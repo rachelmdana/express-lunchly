@@ -72,6 +72,17 @@ router.get("/:id/edit/", async function(req, res, next) {
   }
 });
 
+router.get('/search', async (req, res) => {
+  try {
+    const searchQuery = req.query.name;
+    const matchingCustomers = await Customer.searchByName(searchQuery);
+
+    return res.render('search-results.html', { customers: matchingCustomers });
+  } catch (err) {
+    return next(err);
+  }
+});
+
 /** Handle editing a customer. */
 
 router.post("/:id/edit/", async function(req, res, next) {
@@ -107,6 +118,15 @@ router.post("/:id/add-reservation/", async function(req, res, next) {
     await reservation.save();
 
     return res.redirect(`/${customerId}/`);
+  } catch (err) {
+    return next(err);
+  }
+});
+
+router.get("/best-customers", async function(req, res, next) {
+  try {
+    const topCustomers = await Customer.getTopCustomers();
+    return res.render("best_customers.html", { customers: topCustomers });
   } catch (err) {
     return next(err);
   }
